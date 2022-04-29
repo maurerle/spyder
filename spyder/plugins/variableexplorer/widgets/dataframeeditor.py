@@ -894,6 +894,8 @@ class DataFrameEditor(BaseDialog, SpyderConfigurationAccessor):
     """
     CONF_SECTION = 'variable_explorer'
 
+    sig_reload_data = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -975,6 +977,10 @@ class DataFrameEditor(BaseDialog, SpyderConfigurationAccessor):
         btn_resize = QPushButton(_('Resize'))
         btn_layout.addWidget(btn_resize)
         btn_resize.clicked.connect(self.resize_to_contents)
+
+        btn_reload = QPushButton(_('Reload'))
+        btn_layout.addWidget(btn_reload)
+        btn_reload.clicked.connect(lambda: self.sig_reload_data.emit())
 
         bgcolor = QCheckBox(_('Background color'))
         bgcolor.setChecked(self.dataModel.bgcolor_enabled)

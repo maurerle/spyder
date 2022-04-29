@@ -266,6 +266,12 @@ class CollectionsDelegate(QItemDelegate):
                                             key=key, readonly=readonly))
             return None
 
+    def resend_data(self,editor_id):
+        data = self._editors[editor_id]
+        index = data['model'].get_index_from_key(data['key'])
+        self.get_value(index)
+        self._editors[editor_id].setup_and_check(value, title=key)
+
     def create_dialog(self, editor, data):
         self._editors[id(editor)] = data
         editor.accepted.connect(
@@ -489,6 +495,8 @@ class ToggleColumnDelegate(CollectionsDelegate):
         elif (isinstance(value, (pd.DataFrame, pd.Index, pd.Series))
                 and pd.DataFrame is not FakeObject):
             editor = DataFrameEditor(parent=parent)
+            editor.sig_reload_data.connect(
+                     lambda eid=id(editor): self.resend_data(eid))
             if not editor.setup_and_check(value, title=key):
                 return
             self.create_dialog(editor, dict(model=index.model(), editor=editor,
